@@ -7,3 +7,5 @@ Arduino FastLED based serial controller. (Because I don't wanna buy into MSI's l
 - Edit `driver/src/config.rs` to your liking.
 - Run the rust driver with the serial device path. (e.g. `cargo run /dev/ttyUSB0`, you can edit the code if you want different effects)
 - Profit.
+
+(for the `PingIP` effect you have to change effect.rs to your IP and run `sudo setcap cap_net_raw+ep ./driver/target/debug/driver` on linux to set perms)

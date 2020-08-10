@@ -2,6 +2,7 @@ extern crate error;
 extern crate rand;
 extern crate rgb;
 extern crate serial;
+extern crate icmp;
 
 pub mod effect;
 mod magic;
