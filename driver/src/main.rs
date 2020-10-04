@@ -3,6 +3,7 @@ extern crate rand;
 extern crate rgb;
 extern crate serial;
 extern crate icmp;
+extern crate libmedium;
 
 pub mod effect;
 mod magic;
@@ -50,7 +51,7 @@ fn interact(mut port: SystemPort) -> Result<(), Box<dyn Error>> {
 		eff.iter(&mut controller)?;
 	}
 
-	Ok(())
+	// Ok(())
 }
 
 pub struct Controller {
@@ -77,7 +78,7 @@ impl Controller {
 		let buf: Vec<u8> = vec![magic::PREFIX, magic::SHOW_ALL, rgb.r, rgb.g, rgb.b];
 		self.port.write(&buf)?;
 		self.port.flush()?;
-
+		
 		Ok(())
 	}
 }

@@ -16,6 +16,7 @@ version = "0.1.0"
 dependencies = [
  "error 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "icmp 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libmedium 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "rgb 0.8.20 (registry+https://github.com/rust-lang/crates.io-index)",
  "serial 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -59,6 +60,11 @@ dependencies = [
 [[package]]
 name = "libc"
 version = "0.2.74"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "libmedium"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -180,6 +186,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum icmp 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ac73e9bd805ebd8bfd8bb46886a3126ebdb1f46b5e8f5c73170c968912bb2e16"
 "checksum ioctl-rs 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)" = "f7970510895cee30b3e9128319f2cefd4bde883a39f38baa279567ba3a7eb97d"
 "checksum libc 0.2.74 (registry+https://github.com/rust-lang/crates.io-index)" = "a2f02823cf78b754822df5f7f268fb59822e7296276d3e069d8e8cb26a14bd10"
+"checksum libmedium 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "99f36c37b2bd838543ef9e49b98f6d75ef07a985ef2af877966a41e3f56b26b9"
 "checksum ppv-lite86 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)" = "237a5ed80e274dbc66f86bd59c1e25edc039660be53194b5fe0a482e0f2612ea"
 "checksum rand 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)" = "6a6b1679d49b24bbfe0c803429aa1874472f50d9b363131f0e89fc356b544d03"
 "checksum rand_chacha 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "f4c8ed856279c9737206bf725bf36935d8666ead7aa69b52be55af369d193402"
