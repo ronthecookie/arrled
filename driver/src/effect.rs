@@ -137,3 +137,29 @@ impl Effect for CPUTemp {
         Ok(())
     }
 }
+
+pub struct Rainbow;
+impl Effect for Rainbow {
+    fn init(&self, controller: &mut Controller) -> Result<(), Box<dyn Error>> {
+        std::thread::sleep(Duration::from_millis(500));
+        let frequency = 0.7;
+        for i in 0..(controller.led_count - 1) {
+            controller.set_led(
+                &i,
+                &RGB {
+                    r: ((frequency * (i + 5) as f64).sin() * 127.0 + 127.0) as u8,
+                    g: ((frequency * (i + 5) as f64 + 2.0).sin() * 127.0 + 127.0) as u8,
+                    b: ((frequency * (i + 5) as f64 + 4.0).sin() * 127.0 + 127.0) as u8,
+                },
+            )?;
+            std::thread::sleep(Duration::from_millis(150));
+        }
+        Ok(())
+    }
+    fn iter(&self, _controller: &mut Controller) -> Result<(), Box<dyn Error>> {
+        Ok(())
+    }
+    fn stop(&self, _controller: &mut Controller) -> Result<(), Box<dyn Error>> {
+        Ok(())
+    }
+}
