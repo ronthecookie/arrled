@@ -5,9 +5,15 @@ use libmedium::{
     sensors::{Sensor, SensorBase},
     Hwmon, Hwmons,
 };
+use oref_red_alert::Alert;
 use rgb::*;
 use std::{
     net::{IpAddr, Ipv4Addr},
+    sync::{
+        atomic::{AtomicU64, Ordering},
+        Arc,
+    },
+    thread,
     time::Duration,
 };
 
@@ -17,6 +23,7 @@ pub trait Effect {
     fn iter(&self, controller: &mut Controller) -> Result<(), Box<dyn Error>>;
 }
 
+#[derive(Default)]
 pub struct JustRed;
 impl Effect for JustRed {
     fn init(&self, controller: &mut Controller) -> Result<(), Box<dyn Error>> {
@@ -31,6 +38,7 @@ impl Effect for JustRed {
     }
 }
 
+#[derive(Default)]
 pub struct MovingRedDot;
 impl Effect for MovingRedDot {
     fn init(&self, _controller: &mut Controller) -> Result<(), Box<dyn Error>> {
@@ -53,6 +61,7 @@ impl Effect for MovingRedDot {
     }
 }
 
+#[derive(Default)]
 pub struct PingIP;
 impl Effect for PingIP {
     fn init(&self, controller: &mut Controller) -> Result<(), Box<dyn Error>> {
@@ -75,7 +84,7 @@ impl Effect for PingIP {
                 b: 255,
             })?;
         }
-        std::thread::sleep(Duration::from_millis(500));
+        thread::sleep(Duration::from_millis(500));
         Ok(())
     }
     fn stop(&self, _controller: &mut Controller) -> Result<(), Box<dyn Error>> {
@@ -83,6 +92,7 @@ impl Effect for PingIP {
     }
 }
 
+#[derive(Default)]
 pub struct ArrGeeBee;
 impl Effect for ArrGeeBee {
     fn init(&self, _controller: &mut Controller) -> Result<(), Box<dyn Error>> {
@@ -102,6 +112,7 @@ impl Effect for ArrGeeBee {
     }
 }
 
+#[derive(Default)]
 pub struct CPUTemp;
 impl Effect for CPUTemp {
     fn init(&self, controller: &mut Controller) -> Result<(), Box<dyn Error>> {
@@ -127,7 +138,7 @@ impl Effect for CPUTemp {
         })?;
 
         // don't need to update that much
-        std::thread::sleep(Duration::from_millis(200));
+        thread::sleep(Duration::from_millis(200));
 
         Ok(())
     }
@@ -138,10 +149,11 @@ impl Effect for CPUTemp {
     }
 }
 
+#[derive(Default)]
 pub struct Rainbow;
 impl Effect for Rainbow {
     fn init(&self, controller: &mut Controller) -> Result<(), Box<dyn Error>> {
-        std::thread::sleep(Duration::from_millis(500));
+        thread::sleep(Duration::from_millis(500));
         let frequency = 0.7;
         for i in 0..(controller.led_count - 1) {
             controller.set_led(
@@ -152,7 +164,7 @@ impl Effect for Rainbow {
                     b: ((frequency * (i + 5) as f64 + 4.0).sin() * 127.0 + 127.0) as u8,
                 },
             )?;
-            std::thread::sleep(Duration::from_millis(150));
+            thread::sleep(Duration::from_millis(150));
         }
         Ok(())
     }
@@ -160,6 +172,45 @@ impl Effect for Rainbow {
         Ok(())
     }
     fn stop(&self, _controller: &mut Controller) -> Result<(), Box<dyn Error>> {
+        Ok(())
+    }
+}
+
+#[derive(Default)]
+pub struct MissleAlert {
+    area_count: Arc<AtomicU64>,
+}
+
+impl Effect for MissleAlert {
+    fn init(&self, controller: &mut Controller) -> Result<(), Box<dyn Error>> {
+        controller.show_color(&RGB { r: 255, g: 0, b: 0 })?;
+        {
+            let area_count = self.area_count.clone();
+            thread::spawn(move || loop {
+                let maybe_alert = Alert::get().unwrap();
+                if let Some(alert) = maybe_alert {
+                    area_count.store(alert.areas.len() as u64, Ordering::Relaxed)
+                }
+                thread::sleep(Duration::from_secs(2));
+            })
+            .join()
+            .unwrap();
+        }
+        Ok(())
+    }
+    fn iter(&self, controller: &mut Controller) -> Result<(), Box<dyn Error>> {
+        let ac = self.area_count.load(Ordering::Relaxed);
+        dbg!(ac);
+        controller.show_color(&RGB { r: 255, g: 0, b: 0 })?;
+        thread::sleep(Duration::from_millis(600 / ac.max(1)));
+        if ac != 0 {
+            controller.show_color(&RGB { r: 0, g: 0, b: 0 })?;
+        }
+        thread::sleep(Duration::from_millis(600 / ac.max(1)));
+        Ok(())
+    }
+    fn stop(&self, controller: &mut Controller) -> Result<(), Box<dyn Error>> {
+        controller.show_color(&RGB { r: 255, g: 0, b: 0 })?;
         Ok(())
     }
 }

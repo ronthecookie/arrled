@@ -44,7 +44,7 @@ fn interact(mut port: SystemPort) -> Result<(), Box<dyn Error>> {
     };
     controller.clear_leds()?;
 
-    let eff = config::CURRENT_EFFECT;
+    let eff = config::make_effect();
 
     eff.init(&mut controller)?;
     loop {
