@@ -187,20 +187,25 @@ impl Effect for MissleAlert {
         {
             let area_count = self.area_count.clone();
             thread::spawn(move || loop {
-                let maybe_alert = Alert::get().unwrap();
-                if let Some(alert) = maybe_alert {
-                    area_count.store(alert.areas.len() as u64, Ordering::Relaxed)
+                match Alert::get() {
+                    Ok(maybe_alert) => {
+                        dbg!(&maybe_alert);
+                        if let Some(alert) = maybe_alert {
+                            area_count.store(alert.areas.len() as u64, Ordering::Relaxed)
+                        } else {
+                            area_count.store(0, Ordering::Relaxed)
+                        }
+                    }
+                    Err(_) => {}
                 }
                 thread::sleep(Duration::from_secs(2));
-            })
-            .join()
-            .unwrap();
+            });
         }
         Ok(())
     }
     fn iter(&self, controller: &mut Controller) -> Result<(), Box<dyn Error>> {
         let ac = self.area_count.load(Ordering::Relaxed);
-        dbg!(ac);
+        dbg!(&ac);
         controller.show_color(&RGB { r: 255, g: 0, b: 0 })?;
         thread::sleep(Duration::from_millis(600 / ac.max(1)));
         if ac != 0 {
